@@ -1,0 +1,75 @@
+:root {
+  --dot-bg: #111;
+  --dot-color: #444;
+  --dot-size: 1px;
+  --dot-space: 22px;
+}
+
+* {
+  box-sizing: border-box;
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style-type: none;
+  outline: none;
+  text-decoration: none;
+  box-shadow: none;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+body {
+  background: var(--dot-bg);
+}
+
+section {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+
+  image-rendering: optimizeSpeed;
+  image-rendering: crisp-edges;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+nav {
+  position: fixed;
+  right: 16px;
+  top: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+nav span {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border-radius: 100%;
+}
+
+nav span.selected {
+  border: 6px solid white;
+}
+
+.dotted-background {
+	background:
+		linear-gradient(90deg, var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+		linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+		var(--dot-color);
+}
