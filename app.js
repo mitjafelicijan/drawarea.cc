@@ -11,6 +11,7 @@ const state = {
   currY: 0,
   flag: false,
   dotFlag: false,
+  eraseSize: 80,
 }
 
 const MouseButton = { LEFT: 0, MIDDLE: 1, RIGHT: 2 };
@@ -43,7 +44,7 @@ window.addEventListener("load", () => {
   state.canvas.addEventListener("contextmenu", (evt) => {
     evt.preventDefault();
   }, false);
-  
+
   state.canvas.addEventListener("mousedown", (evt) => {
     // Text being added here.
     if (evt.button == MouseButton.RIGHT) {
@@ -64,9 +65,24 @@ window.addEventListener("load", () => {
     moveAndDraw("down", evt);
   }, false);
 
-  state.canvas.addEventListener("mousemove", function (evt) { moveAndDraw("move", evt) }, false);
+  // Handles different cursors when erasing stuff.
+  document.addEventListener("keydown", (evt) => { if (evt.key === "Control") { setEraserCursor(); } });
+  document.addEventListener("keyup", (evt) => { resetCursor() });
+
   state.canvas.addEventListener("mouseup", function (evt) { moveAndDraw("up", evt) }, false);
   state.canvas.addEventListener("mouseout", function (evt) { moveAndDraw("out", evt) }, false);
+  state.canvas.addEventListener("mousemove", function (evt) {
+    // If Ctrl is pressed then erase stuff.
+    if (evt.ctrlKey) {
+      const x = evt.clientX - state.canvas.offsetLeft - state.eraseSize / 2;
+      const y = evt.clientY - state.canvas.offsetTop - state.eraseSize / 2;
+      state.ctx.clearRect(x, y, state.eraseSize, state.eraseSize);
+      return;
+    }
+    
+    // Do normal drawing stuff.
+    moveAndDraw("move", evt)
+  }, false);
 
   // Clear canvas on Backspace or Del pressed.
   document.addEventListener("keydown", function(event) {
@@ -115,7 +131,7 @@ function moveAndDraw(res, evt) {
       state.currX = evt.clientX - state.canvas.offsetLeft;
       state.currY = evt.clientY - state.canvas.offsetTop;
 
-      // Draw
+      // Draw line.
       state.ctx.beginPath();
       state.ctx.moveTo(state.prevX, state.prevY);
       state.ctx.lineTo(state.currX, state.currY);
@@ -125,4 +141,14 @@ function moveAndDraw(res, evt) {
       state.ctx.closePath();
     }
   }
+}
+
+function setEraserCursor() {
+  const svgData = `<svg xmlns='http://www.w3.org/2000/svg' width='${state.eraseSize}' height='${state.eraseSize}'><rect width='${state.eraseSize}' height='${state.eraseSize}' fill='transparent' stroke='white' stroke-width='4'/></svg>`;
+  const encodedSvgData = encodeURIComponent(svgData);
+  state.canvas.style.cursor = `url("data:image/svg+xml,${encodedSvgData}") ${state.eraseSize / 2} ${state.eraseSize / 2}, auto`;
+}
+
+function resetCursor() {
+  state.canvas.style.cursor = "auto";
 }

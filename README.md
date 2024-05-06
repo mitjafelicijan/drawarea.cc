@@ -8,3 +8,4 @@ Simple drawing tool with text support.
 - Right click asks you to enter text and then puts that text under the
   cursor location.
 - Backspace or Del keypress clears the current canvas.
+- If you hold Ctrl key you are able to erase stuff on canvas. 
