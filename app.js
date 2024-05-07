@@ -112,9 +112,11 @@ window.addEventListener("load", () => {
 
   // Check for pencil size slider value.
   const pencilSizeSlider = document.querySelector(".slider");
-  state.pencilSize = parseInt(pencilSizeSlider.value, 10);
+  state.pencilSize = parseInt(localStorage.getItem("pencilSize") || 2, 10);
+  pencilSizeSlider.value = state.pencilSize;
   pencilSizeSlider.addEventListener("input", (evt) => {
     state.pencilSize = parseInt(evt.target.value, 10);
+    localStorage.setItem("pencilSize", state.pencilSize);
   });
 
   // Periodically save current canvas to localStorage.
