@@ -7,7 +7,7 @@ const state = {
   pencileSize: 20,
   eraseSize: 80,
   currentMouse: { x: 0, y: 0 },
-	lastMouse: { x: 0, y: 0 },
+  lastMouse: { x: 0, y: 0 },
 }
 
 const MouseButton = { LEFT: 0, MIDDLE: 1, RIGHT: 2 };
@@ -67,7 +67,7 @@ window.addEventListener("load", () => {
     state.currentMouse.y = evt.pageY - state.canvas.offsetTop;
   }, false);
 
-	state.canvas.addEventListener("mousedown", function(evt) {
+  state.canvas.addEventListener("mousedown", function(evt) {
     // Text being added here.
     if (evt.button == MouseButton.RIGHT) {
       let text = prompt('Text:');
@@ -84,12 +84,12 @@ window.addEventListener("load", () => {
     }
 	  
     // Do the drawing.
-		state.canvas.addEventListener("mousemove", onPaint, false);
+    state.canvas.addEventListener("mousemove", onPaint, false);
 	}, false);
 	
-	state.canvas.addEventListener("mouseup", function() {
-		state.canvas.removeEventListener("mousemove", onPaint, false);
-	}, false);
+  state.canvas.addEventListener("mouseup", function() {
+    state.canvas.removeEventListener("mousemove", onPaint, false);
+  }, false);
 	
   // Clear canvas on Backspace or Del pressed.
   document.addEventListener("keydown", function(event) {
@@ -124,12 +124,12 @@ window.addEventListener("load", () => {
 function onPaint() {
   state.ctx.lineWidth = state.pencilSize;
   state.ctx.strokeStyle = state.currentColor;
-  
-	state.ctx.beginPath();
-	state.ctx.moveTo(state.lastMouse.x, state.lastMouse.y);
-	state.ctx.lineTo(state.currentMouse.x, state.currentMouse.y);
-	state.ctx.closePath();
-	state.ctx.stroke();
+
+  state.ctx.beginPath();
+  state.ctx.moveTo(state.lastMouse.x, state.lastMouse.y);
+  state.ctx.lineTo(state.currentMouse.x, state.currentMouse.y);
+  state.ctx.closePath();
+  state.ctx.stroke();
 };
 
 function setEraserCursor() {
