@@ -132,6 +132,8 @@ window.addEventListener("load", () => {
 function onPaint() {
   state.ctx.lineWidth = state.pencilSize;
   state.ctx.strokeStyle = state.currentColor;
+  state.ctx.lineJoin = "round";
+  state.ctx.lineCap = "round";
 
   state.ctx.beginPath();
   state.ctx.moveTo(state.lastMouse.x, state.lastMouse.y);
