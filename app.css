@@ -3,6 +3,10 @@
   --dot-color: #444;
   --dot-size: 1px;
   --dot-space: 22px;
+
+  --slider-size: 16px;
+  --slider-bg: #555;
+  --slider-color: ivory;
 }
 
 * {
@@ -76,10 +80,32 @@ nav span.selected {
 
 aside {
   position: fixed;
-  left: 20px;
-  top: 20px;
+  left: 24px;
+  top: 24px;
 }
 
 aside .slider {
   width: 200px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--slider-bg);
+  border-radius: 10px;
+}
+
+aside .slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--slider-size);
+  height: var(--slider-size);
+  background: var(--slider-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+aside .slider::-moz-range-thumb {
+  width: var(--slider-size);
+  height: var(--slider-size);
+  background: var(--slider-color);
+  border-radius: 50%;
+  cursor: pointer;
 }
