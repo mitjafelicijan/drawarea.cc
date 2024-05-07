@@ -9,3 +9,5 @@ Simple drawing tool with text support.
   cursor location.
 - Backspace or Del keypress clears the current canvas.
 - If you hold Ctrl key you are able to erase stuff on canvas. 
+- Autosaving to localStorage and session restore on load.
+- Adjust pencil size with a slider left top.
