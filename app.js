@@ -85,7 +85,7 @@ window.addEventListener("load", () => {
 	  
     // Do the drawing.
     state.canvas.addEventListener("mousemove", onPaint, false);
-	}, false);
+  }, false);
 	
   state.canvas.addEventListener("mouseup", function() {
     state.canvas.removeEventListener("mousemove", onPaint, false);
