@@ -32,6 +32,7 @@ jobs:
           cp app.js public/
           cp app.css public/
           cp favicon.png public/
+          sed -i "s/CACHE_BUSTER/$(date +%s)/g" public/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
