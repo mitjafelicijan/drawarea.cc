@@ -101,13 +101,19 @@ window.addEventListener("load", () => {
 
   // Construct color picker.
   const colorButtons = document.querySelectorAll('[data-color]');
+  state.currentColor = localStorage.getItem("currentColor") || colorButtons[0].dataset.color;
   colorButtons.forEach((colorButton) => {
     colorButton.addEventListener('click', (evt) => {
       state.currentColor = evt.target.dataset.color;
       colorButtons.forEach((colorButton) => { colorButton.classList.remove("selected") });
       evt.target.classList.add("selected");
+      localStorage.setItem("currentColor", state.currentColor);
     });
     colorButton.style.background = colorButton.dataset.color;
+
+    if (state.currentColor == colorButton.dataset.color) {
+      colorButton.classList.add("selected");
+    }
   });
 
   // Check for pencil size slider value.
