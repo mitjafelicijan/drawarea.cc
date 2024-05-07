@@ -73,3 +73,13 @@ nav span.selected {
     linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
     var(--dot-color);
 }
+
+aside {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+}
+
+aside .slider {
+  width: 200px;
+}

@@ -4,14 +4,10 @@ const state = {
   scale: null,
   currentColor: "Ivory",
   font: "30px Arial",
-  lineWidth: 3,
-  prevX: 0,
-  currX: 0,
-  prevY: 0,
-  currY: 0,
-  flag: false,
-  dotFlag: false,
+  pencileSize: 20,
   eraseSize: 80,
+  currentMouse: { x: 0, y: 0 },
+	lastMouse: { x: 0, y: 0 },
 }
 
 const MouseButton = { LEFT: 0, MIDDLE: 1, RIGHT: 2 };
@@ -40,12 +36,38 @@ window.addEventListener("load", () => {
   state.canvas.height *= state.scale;
   state.ctx.scale(state.scale, state.scale);
 
+  state.ctx.lineJoin = "round";
+  state.ctx.lineCap = "round";
+
+  // Load last canvas session.
+  loadCanvasData();
+
   // Prevent context menu being displayed.
   state.canvas.addEventListener("contextmenu", (evt) => {
     evt.preventDefault();
   }, false);
 
-  state.canvas.addEventListener("mousedown", (evt) => {
+  // Handles different cursors when erasing stuff.
+  document.addEventListener("keydown", (evt) => { if (evt.key === "Control") { setEraserCursor(); } });
+  document.addEventListener("keyup", (evt) => { resetCursor() });
+
+  state.canvas.addEventListener("mousemove", (evt) => {
+    // If Ctrl is pressed then erase stuff.
+    if (evt.ctrlKey) {
+      const x = evt.clientX - state.canvas.offsetLeft - state.eraseSize / 2;
+      const y = evt.clientY - state.canvas.offsetTop - state.eraseSize / 2;
+      state.ctx.clearRect(x, y, state.eraseSize, state.eraseSize);
+      return;
+    }
+
+    // Do the drawing.
+    state.lastMouse.x = state.currentMouse.x;
+    state.lastMouse.y = state.currentMouse.y;
+    state.currentMouse.x = evt.pageX - state.canvas.offsetLeft;
+    state.currentMouse.y = evt.pageY - state.canvas.offsetTop;
+  }, false);
+
+	state.canvas.addEventListener("mousedown", function(evt) {
     // Text being added here.
     if (evt.button == MouseButton.RIGHT) {
       let text = prompt('Text:');
@@ -60,30 +82,15 @@ window.addEventListener("load", () => {
       }
       return;
     }
-
-    // Drawing takes place here.
-    moveAndDraw("down", evt);
-  }, false);
-
-  // Handles different cursors when erasing stuff.
-  document.addEventListener("keydown", (evt) => { if (evt.key === "Control") { setEraserCursor(); } });
-  document.addEventListener("keyup", (evt) => { resetCursor() });
-
-  state.canvas.addEventListener("mouseup", function (evt) { moveAndDraw("up", evt) }, false);
-  state.canvas.addEventListener("mouseout", function (evt) { moveAndDraw("out", evt) }, false);
-  state.canvas.addEventListener("mousemove", function (evt) {
-    // If Ctrl is pressed then erase stuff.
-    if (evt.ctrlKey) {
-      const x = evt.clientX - state.canvas.offsetLeft - state.eraseSize / 2;
-      const y = evt.clientY - state.canvas.offsetTop - state.eraseSize / 2;
-      state.ctx.clearRect(x, y, state.eraseSize, state.eraseSize);
-      return;
-    }
-    
-    // Do normal drawing stuff.
-    moveAndDraw("move", evt)
-  }, false);
-
+	  
+    // Do the drawing.
+		state.canvas.addEventListener("mousemove", onPaint, false);
+	}, false);
+	
+	state.canvas.addEventListener("mouseup", function() {
+		state.canvas.removeEventListener("mousemove", onPaint, false);
+	}, false);
+	
   // Clear canvas on Backspace or Del pressed.
   document.addEventListener("keydown", function(event) {
     const key = event.key || event.keyCode;
@@ -102,46 +109,28 @@ window.addEventListener("load", () => {
     });
     colorButton.style.background = colorButton.dataset.color;
   });
+
+  // Check for pencil size slider value.
+  const pencilSizeSlider = document.querySelector(".slider");
+  state.pencilSize = parseInt(pencilSizeSlider.value, 10);
+  pencilSizeSlider.addEventListener("input", (evt) => {
+    state.pencilSize = parseInt(evt.target.value, 10);
+  });
+
+  // Periodically save current canvas to localStorage.
+  setInterval(() => saveCanvasData(), 1000);
 });
 
-function moveAndDraw(res, evt) {
-  if (res == "down") {
-    state.prevX = state.currX;
-    state.prevY = state.currY;
-    state.currX = evt.clientX - state.canvas.offsetLeft;
-    state.currY = evt.clientY - state.canvas.offsetTop;
-
-    state.flag = true;
-    state.dotFlag = true;
-    if (state.dotFlag) {
-      state.ctx.beginPath();
-      state.ctx.fillStyle = state.currentColor;
-      state.ctx.fillRect(state.currX, state.currY, state.lineWidth, state.lineWidth);
-      state.ctx.closePath();
-      state.dotFlag = false;
-    }
-  }
-  if (res == "up" || res == "out") {
-    state.flag = false;
-  }
-  if (res == "move") {
-    if (state.flag) {
-      state.prevX = state.currX;
-      state.prevY = state.currY;
-      state.currX = evt.clientX - state.canvas.offsetLeft;
-      state.currY = evt.clientY - state.canvas.offsetTop;
-
-      // Draw line.
-      state.ctx.beginPath();
-      state.ctx.moveTo(state.prevX, state.prevY);
-      state.ctx.lineTo(state.currX, state.currY);
-      state.ctx.strokeStyle = state.currentColor;
-      state.ctx.lineWidth = state.lineWidth;
-      state.ctx.stroke();
-      state.ctx.closePath();
-    }
-  }
-}
+function onPaint() {
+  state.ctx.lineWidth = state.pencilSize;
+  state.ctx.strokeStyle = state.currentColor;
+  
+	state.ctx.beginPath();
+	state.ctx.moveTo(state.lastMouse.x, state.lastMouse.y);
+	state.ctx.lineTo(state.currentMouse.x, state.currentMouse.y);
+	state.ctx.closePath();
+	state.ctx.stroke();
+};
 
 function setEraserCursor() {
   const svgData = `<svg xmlns='http://www.w3.org/2000/svg' width='${state.eraseSize}' height='${state.eraseSize}'><rect width='${state.eraseSize}' height='${state.eraseSize}' fill='transparent' stroke='white' stroke-width='4'/></svg>`;
@@ -151,4 +140,20 @@ function setEraserCursor() {
 
 function resetCursor() {
   state.canvas.style.cursor = "auto";
+}
+
+function saveCanvasData() {
+  const dataURL = state.canvas.toDataURL();
+  localStorage.setItem("canvasData", dataURL);
+}
+
+function loadCanvasData() {
+  const dataURL = localStorage.getItem("canvasData");
+  if (dataURL) {
+    const img = new Image();
+    img.src = dataURL;
+    img.onload = function() {
+      state.ctx.drawImage(img, 0, 0);
+    };
+  }
 }
